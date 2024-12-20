@@ -12,41 +12,40 @@ namespace SingleResponsibilityPrinciple
     {
         string url;
         ILogger logger;
-        
-            public URLTradeDataProvider(string url, ILogger logger)
-            {
-                this.url = url;
-                this.logger = logger;
-            }
+        public URLTradeDataProvider(string url, ILogger logger)
+        {
+            this.url = url;
+            this.logger = logger;
+        }
 
-            public IEnumerable<string> GetTradeData()
-            {
+        //public IEnumerable<string> GetTradeData()
+        public async Task<IEnumerable<string>> GetTradeDataAsync()
+
+        {
             List<string> tradeData = new List<string>();
             logger.LogInfo("Reading trades from URL: " + url);
 
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = client.GetAsync(url).Result;
+                //HttpResponseMessage response = client.GetAsync(url).Result;
+                HttpResponseMessage response = await client.GetAsync(url);
+
                 if (!response.IsSuccessStatusCode)
                 {
-                    // log error and throw an exception if the URL fails
                     logger.LogWarning($"Failed to retrieve data. Status code: {response.StatusCode}");
                     throw new Exception($"Error retrieving data from URL: {url}");
-
                 }
-                // set up a Stream and StreamReader to access the data
-                using (Stream stream = response.Content.ReadAsStreamAsync().Result)
+
+                //using (Stream stream = response.Content.ReadAsStreamAsync().Result)
+                using (Stream stream = await response.Content.ReadAsStreamAsync())
+
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    // Read each line of the text file using reader.ReadLine()
-                    // Read until the reader returns a null line
-                    // Add each line to the tradeData list
                     string line;
                     while ((line = reader.ReadLine()) != null)
                     {
                         tradeData.Add(line);
                     }
-
                 }
             }
             return tradeData;
@@ -54,11 +53,10 @@ namespace SingleResponsibilityPrinciple
         }
 
 
-
-
-
-
-
+        public IEnumerable<string> GetTradeData()
+        {
+            return GetTradeDataAsync().GetAwaiter().GetResult();
+        }
 
 
     }
