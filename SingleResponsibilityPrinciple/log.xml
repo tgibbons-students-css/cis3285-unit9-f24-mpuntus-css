@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<logs>
+  <log>
+    <type>WARN</type>
+    <message>Line malformed. Only 2 fields found.</message>
+  </log>
+  <log>
+    <type>INFO</type>
+    <message>4 trades processed</message>
+  </log>
+</logs>
